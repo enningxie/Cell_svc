@@ -28,7 +28,7 @@ def _load_data(data_path, label_path):
     with open(label_path, 'r') as f:
         labels = f.readlines()
     for label in labels:
-        label_value = label.split('\t')[1][0]
+        label_value = int(label.split('\t')[1][0])
         label_key = label.split('\t')[0].split('\\')[-1]
         if label_key in data_label_dict.keys():
             data_label_dict[label_key].append(label_value)

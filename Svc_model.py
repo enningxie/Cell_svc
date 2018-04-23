@@ -14,6 +14,13 @@ def parser():
     return args.parse_args()
 
 
+# process labels 1, 2, 3 to 1
+def process_label(labels):
+    for i, label in enumerate(labels):
+        if label != 0:
+            labels[i] = 1
+
+
 if __name__ == '__main__':
     FLAGS = parser()
     train_x, train_y, test_x, test_y = return_data(FLAGS.train_path, FLAGS.train_labels,
@@ -21,7 +28,15 @@ if __name__ == '__main__':
     clf = SVC()
     clf.fit(train_x, train_y)
     pred_y = clf.predict(test_x)
-    print(pred_y[:5])
-    # confusion = confusion_matrix(test_y, pred_y)
-    # print('FN:', confusion[1, 0])
+    # convert label_set
+    process_label(pred_y)
+    process_label(test_y)
+
+    confusion = confusion_matrix(test_y, pred_y)
+
+    # cal num of fn
+    fn_num = confusion[1, 0]
+    result = fn_num / len(test_x) * 100
+    print('fn: {0}, result: {1}%.'.format(fn_num, result))
+
 
