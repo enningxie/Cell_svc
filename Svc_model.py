@@ -1,5 +1,6 @@
 from sklearn.svm import SVC
 from sklearn.neighbors import KNeighborsClassifier
+import numpy as np
 from sklearn.metrics import confusion_matrix
 import argparse
 from utils import return_data
@@ -15,11 +16,14 @@ def parser():
     return args.parse_args()
 
 
-# process labels 1, 2, 3 to 1
-def process_label(labels):
-    for i, label in enumerate(labels):
-        if label != 0:
-            labels[i] = 1
+def fn_func(true_y, pred_y):
+    fn_num = [0] * 3
+    assert len(true_y) == len(pred_y), 'error with fn_func.'
+    for i in range(len(true_y)):
+        if true_y[i] == 0:
+            if pred_y[i] != 0:
+                fn_num[pred_y[i]-1] += 1
+    return fn_num
 
 
 if __name__ == '__main__':
@@ -31,27 +35,20 @@ if __name__ == '__main__':
     clf_svm.fit(train_x, train_y)
     pred_y_svm = clf_svm.predict(test_x)
 
+    # svm evaluate
+    fn_num_svm = fn_func(test_y, pred_y_svm)
+    result_svm = np.array(fn_num_svm) / len(test_x) * 100
+    print('svm_falseNegative: {0}%, {1}%, {2}%.'.format(result_svm[0], result_svm[1], result_svm[2]))
+
     # knn
     clf_knn = KNeighborsClassifier(n_neighbors=4)
     clf_knn.fit(train_x, train_y)
     pred_y_knn = clf_knn.predict(test_x)
 
-    # convert label_set
-    process_label(pred_y_svm)
-    process_label(pred_y_knn)
-    process_label(test_y)
+    # knn evaluate
+    fn_num_knn = fn_func(test_y, pred_y_knn)
+    result_knn = np.array(fn_num_knn) / len(test_x) * 100
+    print('knn_falseNegative: {0}%, {1}%, {2}%.'.format(result_knn[0], result_knn[1], result_knn[2]))
 
-    confusion_svm = confusion_matrix(test_y, pred_y_svm)
-    confusion_knn = confusion_matrix(test_y, pred_y_knn)
-
-    # cal num of fn_svm
-    fn_num_svm = confusion_svm[1, 0]
-    result_svm = fn_num_svm / len(test_x) * 100
-    print('svm_fn: {0}, svm_result: {1}%.'.format(fn_num_svm, result_svm))
-
-    # cal num of fn_knn
-    fn_num_knn = confusion_knn[1, 0]
-    result_knn = fn_num_knn / len(test_x) * 100
-    print('knn_fn: {0}, knn_result: {1}%.'.format(fn_num_knn, result_knn))
 
 
