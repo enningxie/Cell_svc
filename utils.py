@@ -3,11 +3,6 @@ import numpy as np
 from PIL import Image
 from collections import defaultdict
 
-train_path = '/home/enningxie/Downloads/Cell_/train'
-test_path = '/home/enningxie/Downloads/Cell_/test'
-train_label_path = '/home/enningxie/Downloads/Cell_/train.txt'
-test_label_path = '/home/enningxie/Downloads/Cell_/test.txt'
-
 
 # return x, y
 def _load_data(data_path, label_path):
